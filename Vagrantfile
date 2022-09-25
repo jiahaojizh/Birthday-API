@@ -27,6 +27,6 @@ end
 config.vm.provision "shell", inline: $script
   
 # Sync folder
-config.vm.synced_folder "C:\\Users\\jijz\\Documents\\gssacgms\\revolut-devops-test\\Birthday-API\\shared_folder", "/home/vagrant/shared_folder"
+config.vm.synced_folder "C:\\Users\\jijz\\Documents\\gssacgms\\revolut-devops-test", "/home/vagrant/shared_folder"
 end
   
