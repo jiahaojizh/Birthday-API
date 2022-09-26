@@ -1,6 +1,6 @@
 from flask import Flask, request, abort
 from flask_restful import Resource, Api
-from datetime import datetime
+from datetime import datetime, date
 import sqlite3
 
 app = Flask(__name__)
@@ -55,6 +55,10 @@ class HelloUser(Resource):
         conn = db_connection()
         cursor = conn.cursor()
 
+        # check that the username contains only letters
+        if not username.isalpha():
+            return {"message": "The username can only contain letters, received: " + username}, 400
+
         user_birthday = request.form['dateOfBirth']
 
         # check that the dateOfBirth has the correct format
@@ -62,7 +66,17 @@ class HelloUser(Resource):
             birthday_dt = datetime.strptime(user_birthday, "%Y-%m-%d")
         except:
             return {"message": "The field dateOfBirth expects to receive a correct date with the format %YYYY-%MM-%DD, data received: " + user_birthday}, 400
+        
+        # check that dateOfBirth was prior to today
+        today = datetime.now()
+        # only keep the year, month and day
+        today_dt = datetime.strptime(str(today.year) + "-" + 
+                str(today.month) + "-" + str(today.day), "%Y-%m-%d")
+        
+        if today_dt < birthday_dt:
+            return {"message": "The field dateOfBirth must be before than today (" + date(today.year, today.month, today.day).isoformat() + "), data received: " + user_birthday}, 400
 
+        # insert or update the data
         sql = """INSERT INTO birthday(username, birthday)
                  VALUES (?,?)"""
         cursor.execute(sql, (username, user_birthday))
