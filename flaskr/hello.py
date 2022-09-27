@@ -77,7 +77,7 @@ class HelloUser(Resource):
             return {"message": "The field dateOfBirth must be before than today (" + date(today.year, today.month, today.day).isoformat() + "), data received: " + user_birthday}, 400
 
         # insert or update the data
-        sql = """INSERT INTO birthday(username, birthday)
+        sql = """INSERT OR REPLACE INTO birthday(username, birthday)
                  VALUES (?,?)"""
         cursor.execute(sql, (username, user_birthday))
         conn.commit()

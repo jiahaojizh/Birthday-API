@@ -1,13 +1,15 @@
 import pytest
 import sys
 import requests
-from datetime import datetime
-from freezegun import freeze_time
+from datetime import datetime, date
 
 # append the path of the parent directory
 sys.path.append("..")
 
 from flaskr import hello
+
+TODAY = datetime.now()
+TODAY_ISO = date(TODAY.year, TODAY.month, TODAY.day).isoformat()
 
 ### DB CONNECTION
 def test_db_connection():
@@ -25,11 +27,10 @@ def test_post_user_with_invalid_username():
     assert r.status_code == 400
     assert r.json()["message"] == "The username can only contain letters, received: n3w-us4r"
 
-@freeze_time("2022-09-26")
 def test_post_user_wrong_date():
     r = requests.put('http://localhost:5000/hello/newuser', data={'dateOfBirth': '2050-01-01'})
     assert r.status_code == 400
-    assert r.json()["message"] == "The field dateOfBirth must be before than today (2022-09-26), data received: 2050-01-01"
+    assert r.json()["message"] == "The field dateOfBirth must be before than today (" + TODAY_ISO + "), data received: 2050-01-01"
 
 def test_post_user_incorrect_date_format():
     r = requests.put('http://localhost:5000/hello/newuser', data={'dateOfBirth': '1998-00-00'})
@@ -37,22 +38,25 @@ def test_post_user_incorrect_date_format():
     assert r.json()["message"] == "The field dateOfBirth expects to receive a correct date with the format %YYYY-%MM-%DD, data received: 1998-00-00"
 
 ### GET METHOD
-@freeze_time("2022-09-26")
 def test_get_user():
-    r = requests.put('http://localhost:5000/hello/newuser', data={'dateOfBirth': '1998-09-28'})
+    # set a day different than the current day
+    day = 27
+    if day == TODAY.day:
+        day = 12
+    r = requests.put('http://localhost:5000/hello/newuser', data={'dateOfBirth': date(TODAY.year, TODAY.month, day).isoformat()})
+    assert r.status_code == 204
     r = requests.get("http://localhost:5000/hello/newuser")
     assert r.status_code == 200
-    assert r.json()["message"] == "Hello, newuser! Your birthday is in 2 day(s)"
+    assert "Hello, newuser! Your birthday is in" in r.json()["message"]
 
-@freeze_time("2022-09-26")
 def test_get_user_with_birthday():
-    r = requests.put('http://localhost:5000/hello/newuser', data={'dateOfBirth': '1998-09-26'})
+    r = requests.put('http://localhost:5000/hello/newuser', data={'dateOfBirth': date(TODAY.year-20, TODAY.month, TODAY.day).isoformat()})
     r = requests.get("http://localhost:5000/hello/newuser")
     assert r.status_code == 200
     assert r.json()["message"] == "Hello, newuser! Happy birthday!"
 
 def test_get_non_existent_user():
-    r = requests.get("http://localhost:5000/hello/non-existent-user")
+    r = requests.get("http://localhost:5000/hello/nonexistentuser")
     assert r.status_code == 404
-    assert r.json()["message"] == "Error 404. The user with username: 'non-existent-user' does not exist"
+    assert r.json()["message"] == "Error 404. The user with username: 'nonexistentuser' does not exist"
 
