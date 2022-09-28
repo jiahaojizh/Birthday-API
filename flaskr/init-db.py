@@ -1,6 +1,6 @@
 import sqlite3 as sql
 
-DB_NAME = "birthday.db"
+DB_NAME = "../database/birthday.db"
 
 def createDB():
     conn = sql.connect(DB_NAME)
