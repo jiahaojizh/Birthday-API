@@ -15,4 +15,4 @@ WORKDIR /app/flaskr
 EXPOSE 5000
 
 # Run server
-CMD ["python3", "hello.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "hello:create_app()"]
