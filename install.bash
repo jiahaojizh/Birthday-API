@@ -14,4 +14,4 @@ fi
 
 # Run docker container with volume mount
 echo "Starting docker container..."
-docker run -d -v $(pwd)/database:/app/database hello
+docker run -d -v $(pwd)/database:/app/database -p 80:80 hello
