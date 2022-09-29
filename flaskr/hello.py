@@ -89,8 +89,8 @@ class HelloUser(Resource):
     def delete(self, username):
         conn = db_connection()
         cursor = conn.cursor()
-        sql = """DELETE FROM birthday WHERE username=VALUES(?)"""
-        cursor.execute(sql, (username))
+        sql = """DELETE FROM birthday WHERE username=?"""
+        cursor.execute(sql, (username,))
         conn.commit()
         return '', 204
 
