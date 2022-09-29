@@ -96,5 +96,5 @@ class HelloUser(Resource):
 
 api.add_resource(HelloUser, '/hello/<string:username>')
 
-if __name__ == '__main__':
-    app.run(port=5000, debug=True, host='0.0.0.0')
+def create_app():
+    return app
