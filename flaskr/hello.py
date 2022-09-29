@@ -83,6 +83,16 @@ class HelloUser(Resource):
         conn.commit()
 
         return '', 204
+    
+    # This method has been created to remove the users created by the test, due to lack of time, this method has not been tested
+    # as it was out of scope of this project
+    def delete(self, username):
+        conn = db_connection()
+        cursor = conn.cursor()
+        sql = """DELETE FROM birthday WHERE username=?"""
+        cursor.execute(sql, (username,))
+        conn.commit()
+        return '', 204
 
 api.add_resource(HelloUser, '/hello/<string:username>')
 
