@@ -68,10 +68,13 @@ This is a first version of the architecture for a more robust deployment.
   - An nginx as load balancer is added
   - The load is distributed initially on both servers
   - When there is a new release, one server handles all the load (Green), while the other gets updated (Blue)
-  - The load gets handled by the Blue
-  - If everything goes fine, the green is updated and the load is distributed again, otherwise the blue handles everything
+  - After the update, the load gets handled by the Blue
+  - If everything goes fine, the green is updated and the load is distributed again, otherwise the blue is rolled back to the previous version
 
 #### Change database to postgresql or another database with more features
+
+![image](https://user-images.githubusercontent.com/114239936/193153107-932fed33-9a21-4f9f-852f-93b1a7d30c0a.png)
+
 Sqlite was used because it was easy to deploy and test and it does not require much effort. To scale sqlite in a AWS environment, a solution could be to share a volume across the servers.
 
 However a proper solution would be to deploy a postgresql for instance on another docker container to have service/database separated, and tested better or use any cloud service.
